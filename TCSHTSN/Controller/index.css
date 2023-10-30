@@ -1,0 +1,556 @@
+@charset "UTF-8";
+html {
+  overflow-y: auto;
+}
+
+html > body {
+  background-color: white;
+  height: calc(100% - 64px);
+  margin-top: 64px;
+}
+
+@media all and (max-width: 990px) {
+  html > body {
+    height: calc(100% - 128px) !important;
+    margin-bottom: 64px;
+  }
+}
+
+i {
+  font-style: normal !important;
+  opacity: .6;
+}
+
+nav {
+  height: 64px;
+  width: 100%;
+  opacity: 95%;
+}
+
+nav > div {
+  width: calc(100% - 128*2px);
+  margin: 0 128px;
+}
+
+@media all and (max-width: 1050px) {
+  nav > div {
+    width: calc(100% - 32*2px);
+    margin: 0 32px !important;
+  }
+}
+
+@media all and (max-width: 1445px) {
+  nav > div {
+    width: calc(100% - 64*2px);
+    margin: 0 64px;
+  }
+}
+
+@media all and (max-width: 990px) {
+  nav > div {
+    position: relative;
+    height: 64px;
+    width: 360px;
+    margin: 0 auto !important;
+  }
+}
+
+nav > div > svg {
+  float: left;
+  position: absolute;
+  height: 64px;
+}
+
+nav > div > ul {
+  float: right;
+}
+
+@media all and (max-width: 990px) {
+  nav > div > ul {
+    display: none;
+  }
+}
+
+nav > div > ul > li {
+  display: inline-block;
+  margin: 4px 3rem;
+  cursor: pointer !important;
+}
+
+@media all and (max-width: 1445px) {
+  nav > div > ul > li {
+    margin: 4px 2rem;
+  }
+}
+
+@media all and (max-width: 1200px) {
+  nav > div > ul > li {
+    margin: 4px 1rem;
+  }
+}
+
+nav > div > ul > li > a {
+  position: relative;
+  color: #2f3640;
+  text-decoration: none;
+  font-family: 'taipei-sans-tc-bold';
+  font-size: 22px;
+  font-weight: 600;
+  padding: 16px 0px;
+}
+
+nav > div > ul > li > a:hover {
+  color: #2f3640 !important;
+}
+
+nav > div > ul > li > a:hover::before {
+  -webkit-transform: scaleX(1);
+          transform: scaleX(1);
+  -webkit-transform-origin: left;
+          transform-origin: left;
+}
+
+nav > div > ul > li > a::before {
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  content: '';
+  left: 0;
+  bottom: 0;
+  margin-bottom: -4px;
+  background-color: #2f3640;
+  -webkit-transform: scaleX(0);
+          transform: scaleX(0);
+  -webkit-transform-origin: right;
+          transform-origin: right;
+  -webkit-transition: -webkit-transform .2s linear;
+  transition: -webkit-transform .2s linear;
+  transition: transform .2s linear;
+  transition: transform .2s linear, -webkit-transform .2s linear;
+}
+
+.NavActive {
+  border-bottom: 3px solid;
+}
+
+@media all and (max-width: 990px) {
+  .NavActive > i {
+    color: green;
+  }
+  .NavActive > b {
+    color: green;
+  }
+  .NavActive > svg {
+    fill: green;
+  }
+}
+
+.Nav-Icon {
+  padding-right: 15px;
+  padding-bottom: 28px;
+}
+
+#足跡Icon {
+  position: relative;
+  height: 22px;
+  width: auto;
+  top: 3px;
+  -webkit-transform: scaleX(1.3) scaleY(0.9) rotate(16deg);
+          transform: scaleX(1.3) scaleY(0.9) rotate(16deg);
+  padding-right: 3px;
+}
+
+@media all and (max-width: 990px) {
+  #足跡Icon {
+    margin-bottom: -1px;
+    width: 2.3em;
+    height: auto;
+  }
+}
+
+#採訪Icon {
+  position: relative;
+  height: 22px;
+  width: auto;
+  top: 3px;
+  -webkit-transform: scale(1.1);
+          transform: scale(1.1);
+  padding-right: 3px;
+}
+
+@media all and (max-width: 990px) {
+  #採訪Icon {
+    margin-bottom: 1px;
+    width: 2.2em;
+    height: auto;
+  }
+}
+
+NavM {
+  -webkit-box-shadow: 0px 0px 3px rgba(34, 36, 38, 0.15);
+          box-shadow: 0px 0px 3px rgba(34, 36, 38, 0.15);
+  display: none;
+  position: fixed;
+  height: 64px;
+  width: 100%;
+  bottom: 0px;
+}
+
+@media all and (max-width: 990px) {
+  NavM {
+    display: inline-block;
+    background: white;
+  }
+  NavM > ul {
+    height: 64px;
+    padding: 0px;
+    text-align: center;
+  }
+  NavM > ul > li {
+    margin: 0 8%;
+    display: inline-block;
+    cursor: pointer;
+  }
+  NavM > ul > li > a > i {
+    display: table-row !important;
+    position: relative;
+    color: #2f3640;
+  }
+  NavM > ul > li > a > i:hover {
+    color: green;
+  }
+  NavM > ul > li > a > svg {
+    display: table-row;
+  }
+  NavM > ul > li > a > svg:hover {
+    fill: green;
+  }
+  NavM > ul > li > a {
+    display: table-row !important;
+  }
+  NavM > ul > li > a > b {
+    display: table-row !important;
+    color: #2f3640;
+  }
+}
+
+.NotLooking {
+  display: none;
+}
+
+section {
+  position: absolute;
+  padding: 32px 128px;
+}
+
+@media all and (max-width: 1444px) {
+  section {
+    padding: 32px 64px;
+  }
+}
+
+@media all and (max-width: 1050px) {
+  section {
+    padding: 12 16px;
+  }
+}
+
+section h1 {
+  font-size: 32px !important;
+  font-weight: 500 !important;
+}
+
+section h2 {
+  font-size: 26px !important;
+  font-weight: 500 !important;
+}
+
+section h3 {
+  font-size: 20px !important;
+  font-weight: 300 !important;
+  line-height: 2em !important;
+}
+
+section span {
+  font-size: 20px !important;
+  font-weight: 300 !important;
+  line-height: 2em !important;
+}
+
+#活動Content {
+  height: calc(100% - 64px);
+  width: 100%;
+  background-position: center;
+  background-size: contain;
+  padding: 0px;
+}
+
+#活動Content > div {
+  position: absolute;
+  overflow-y: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+#活動Content h1 {
+  font-size: 64px !important;
+  font-weight: 500 !important;
+  display: table;
+  margin: 0px auto;
+}
+
+#活動Content h2 {
+  font-size: 28px !important;
+  font-weight: 300 !important;
+  text-align: center;
+}
+
+#活動Content h3 {
+  font-size: 32px !important;
+  font-weight: 400 !important;
+  line-height: 2em !important;
+}
+
+#活動Content .text {
+  display: table;
+  margin: 15% auto 0px auto;
+  max-width: 60%;
+}
+
+#活動Content #Start {
+  background-size: contain;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/Start.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Start.jpg");
+}
+
+#活動Content #招生說明會 {
+  background-size: cover;
+  background-position: top;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/Principle and US dollar MaMa.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Principle and US dollar MaMa.jpg");
+}
+
+#活動Content #暑輔的關懷 {
+  background-size: cover;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/first look.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/first look.jpg");
+}
+
+#活動Content #手工書 {
+  background-size: cover;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/HandBook.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/HandBook.jpg");
+}
+
+#活動Content #謝師茶會 {
+  background-size: cover;
+  background-position: top;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/tks James.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/tks James.jpg");
+}
+
+#活動Content #慈懿日 {
+  background-size: cover;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/Month Days.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Month Days.jpg");
+}
+
+#活動Content #親師座談 {
+  background-size: cover;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/parents meet teacher.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/parents meet teacher.jpg");
+}
+
+#活動Content #高三成年禮 {
+  background-size: cover;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/high318years.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/high318years.jpg");
+}
+
+#活動Content #運動會 {
+  background-size: cover;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/Excersice.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Excersice.jpg");
+}
+
+#活動Content #感激12 {
+  background-size: cover;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/StupidStarvingPeople12.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/StupidStarvingPeople12.jpg");
+}
+
+#活動Content #精舍路跑 {
+  background-size: contain;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/Run.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Run.jpg");
+}
+
+#活動Content #畢業典禮 {
+  background-size: contain;
+  background-position: center;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), to(rgba(255, 255, 255, 0.8))), url("../Images/慈誠懿德官網/Graduate.jpg");
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Graduate.jpg");
+}
+
+#活動-Nav {
+  display: table;
+  float: none;
+  height: 30px !important;
+  width: 624px !important;
+  position: relative;
+  top: 85%;
+  left: 29%;
+}
+
+#採訪Content {
+  height: calc(100% - 64px);
+  width: 100%;
+}
+
+#採訪Content .ifyt {
+  display: table;
+  margin: 0px auto;
+}
+
+#採訪Content > div {
+  display: table;
+  margin: 12px auto;
+  width: 896px;
+}
+
+#採訪Content .fullvideo {
+  margin-top: 16px;
+}
+
+#採訪Content .oksize {
+  display: inline-block;
+}
+
+#採訪Content .oksize > a {
+  display: inline-block;
+  margin: 0em 0.25rem 0.5rem;
+  width: 294px;
+  height: auto;
+}
+
+#組員Content {
+  height: calc(100% - 64px);
+  width: 100%;
+}
+
+#組員Content > div {
+  display: table;
+  margin: 0px auto;
+  width: 896px;
+  height: 556px;
+}
+
+#組員Content .fullvideo {
+  margin-top: 16px;
+}
+
+#組員Content .oksize {
+  display: inline-block;
+}
+
+#組員Content .oksize > a {
+  display: inline-block;
+  margin: 0em 0.25rem 0.5rem;
+  width: 294px;
+  height: auto;
+}
+
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: black;
+  font-weight: bold;
+  font-size: 24px;
+  -webkit-transition: 0.6s ease;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 16px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  -webkit-transition: background-color 0.6s ease;
+  transition: background-color 0.6s ease;
+}
+
+.active,
+.dot:hover {
+  background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {
+    opacity: .4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: .4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.menuabc {
+  position: absolute;
+  display: table;
+  bottom: 0px;
+  margin-bottom: 16px;
+  margin-left: 30%;
+  width: 600px !important;
+  height: 24px !important;
+}
+/*# sourceMappingURL=index.css.map */

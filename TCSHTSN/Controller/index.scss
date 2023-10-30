@@ -1,0 +1,539 @@
+@mixin Resolution-4K() {
+    @media all and (max-width: 3840px) {
+        @content;
+    }
+}
+
+@mixin Resolution-Mobile() {
+    @media all and (max-width: 990px) {
+        @content;
+    }
+}
+
+html {
+    overflow-y: auto;
+
+    >body {
+        background-color: white;
+        height: calc(100% - 64px);
+        margin-top: 64px;
+
+        @include Resolution-Mobile() {
+            height: calc(100% - 128px) !important;
+            margin-bottom: 64px;
+        }
+    }
+}
+
+i {
+    font-style: normal !important;
+    opacity: .6;
+}
+
+// Navigate Bar Start~~~~~~~~~~~
+nav {
+    height: 64px;
+    width: 100%;
+    opacity: 95%;
+
+    //Nav's Content Part Settings
+    >div {
+        width: calc(100% - 128*2px);
+        margin: 0 128px;
+
+        @media all and (max-width: 1050px) {
+            width: calc(100% - 32*2px);
+            margin: 0 32px !important;
+        }
+
+        @media all and (max-width: 1445px) {
+            width: calc(100% - 64*2px);
+            margin: 0 64px;
+        }
+
+        @include Resolution-Mobile {
+            position: relative;
+            height: 64px;
+            width: 360px;
+            margin: 0 auto !important;
+        }
+    }
+
+    //logo
+    >div>svg {
+        float: left;
+        position: absolute;
+        height: 64px;
+    }
+
+    //list
+    >div>ul {
+        float: right;
+
+        @include Resolution-Mobile {
+            display: none;
+        }
+    }
+
+    //list content
+    >div>ul>li {
+        display: inline-block;
+        margin: 4px 3rem;
+        cursor: pointer !important;
+
+        @media all and (max-width: 1445px) {
+            margin: 4px 2rem;
+        }
+
+        @media all and (max-width: 1200px) {
+            margin: 4px 1rem;
+        }
+    }
+
+    >div>ul>li>a {
+        position: relative;
+        color: #2f3640;
+        text-decoration: none;
+        font-family: 'taipei-sans-tc-bold';
+        font-size: 22px;
+        font-weight: 600;
+        padding: 16px 0px;
+
+        &:hover {
+            color: #2f3640 !important;
+        }
+
+        &:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        &::before {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            content: '';
+            left: 0;
+            bottom: 0;
+            margin-bottom: -4px;
+            background-color: #2f3640;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform .2s linear;
+        }
+    }
+}
+
+//Your Position
+.NavActive {
+    border-bottom: 3px solid;
+
+    @include Resolution-Mobile {
+        >i {
+            color: green;
+        }
+
+        >b {
+            color: green;
+        }
+
+        >svg {
+            fill: green;
+        }
+    }
+}
+
+//Icon
+.Nav-Icon {
+    padding-right: 15px;
+    padding-bottom: 28px;
+}
+
+#足跡Icon {
+    position: relative;
+    height: 22px;
+    width: auto;
+    top: 3px;
+    transform: scaleX(1.3) scaleY(0.9) rotate(16deg);
+    padding-right: 3px;
+
+    @include Resolution-Mobile {
+        margin-bottom: -1px;
+        width: 2.3em;
+        height: auto;
+    }
+}
+
+#採訪Icon {
+    position: relative;
+    height: 22px;
+    width: auto;
+    top: 3px;
+    transform: scale(1.1);
+    padding-right: 3px;
+
+    @include Resolution-Mobile {
+        margin-bottom: 1px;
+        width: 2.2em;
+        height: auto;
+    }
+}
+
+//Mobile
+NavM {
+    box-shadow: 0px 0px 3px rgba(34, 36, 38, .15);
+    display: none;
+    position: fixed;
+    height: 64px;
+    width: 100%;
+    bottom: 0px;
+
+    @include Resolution-Mobile {
+        display: inline-block;
+        background: white;
+
+        >ul {
+            height: 64px;
+            padding: 0px;
+            text-align: center;
+        }
+
+        >ul>li {
+            margin: 0 8%;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        >ul>li>a>i {
+            display: table-row !important;
+            position: relative;
+            color: #2f3640;
+
+            &:hover {
+                color: green;
+            }
+        }
+
+        >ul>li>a>svg {
+            display: table-row;
+
+            &:hover {
+                fill: green;
+            }
+        }
+
+        >ul>li>a {
+            display: table-row !important;
+        }
+
+        >ul>li>a>b {
+            display: table-row !important;
+            //font-weight: 600;
+            color: #2f3640;
+        }
+    }
+}
+
+//~~~~~~~~~~Navigate Bar End
+.NotLooking {
+    display: none;
+}
+
+section {
+    position: absolute;
+    padding: 32px 128px;
+
+    @media all and (max-width: 1444px) {
+        padding: 32px 64px;
+    }
+
+    @media all and (max-width: 1050px) {
+        padding: 12 16px;
+    }
+
+    h1 {
+        font-size: 32px !important;
+        font-weight: 500 !important;
+    }
+
+    h2 {
+        font-size: 26px !important;
+        font-weight: 500 !important;
+    }
+
+    h3 {
+        font-size: 20px !important;
+        font-weight: 300 !important;
+        line-height: 2em !important;
+    }
+
+    span {
+        font-size: 20px !important;
+        font-weight: 300 !important;
+        line-height: 2em !important;
+    }
+}
+
+#活動Content {
+    height: calc(100% - 64px);
+    width: 100%;
+    background-position: center;
+    background-size: contain;
+    padding: 0px;
+
+    >div {
+        position: absolute;
+        overflow-y: hidden;
+        height: 100%;
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 64px !important;
+        font-weight: 500 !important;
+        display: table;
+        margin: 0px auto;
+    }
+
+    h2 {
+        font-size: 28px !important;
+        font-weight: 300 !important;
+        text-align: center;
+        // display: table;
+        // margin: 12px auto 0px auto;
+    }
+
+    h3 {
+        font-size: 32px !important;
+        font-weight: 400 !important;
+        line-height: 2em !important;
+    }
+
+    .text {
+        display: table;
+        margin: 15% auto 0px auto;
+        max-width: 60%;
+    }
+
+    #Start {
+        background-size: contain;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Start.jpg");
+    }
+
+    #招生說明會 {
+        background-size: cover;
+        background-position: top;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Principle\ and\ US\ dollar\ MaMa.jpg");
+    }
+
+    #暑輔的關懷 {
+        background-size: cover;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/first\ look.jpg");
+    }
+
+    #手工書 {
+        background-size: cover;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/HandBook.jpg");
+    }
+
+    #謝師茶會 {
+        background-size: cover;
+        background-position: top;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/tks\ James.jpg");
+    }
+
+    #慈懿日 {
+        background-size: cover;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Month\ Days.jpg");
+    }
+
+    #親師座談 {
+        background-size: cover;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/parents\ meet\ teacher.jpg");
+    }
+
+    #高三成年禮 {
+        background-size: cover;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/high318years.jpg");
+    }
+
+    #運動會 {
+        background-size: cover;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Excersice.jpg");
+    }
+
+    #感激12 {
+        background-size: cover;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/StupidStarvingPeople12.jpg");
+    }
+
+    #精舍路跑 {
+        background-size: contain;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Run.jpg");
+    }
+
+    #畢業典禮 {
+        background-size: contain;
+        background-position: center;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../Images/慈誠懿德官網/Graduate.jpg");
+    }
+}
+
+#活動-Nav {
+    display: table;
+    float: none;
+    height: 30px !important;
+    width: 624px !important;
+    position: relative;
+    top: 85%;
+    left: 29%;
+}
+
+#採訪Content {
+    height: calc(100% - 64px);
+    width: 100%;
+
+    .ifyt {
+        display: table;
+        margin: 0px auto;
+    }
+
+    >div {
+        display: table;
+        margin: 12px auto;
+        width: 896px;
+    }
+
+    .fullvideo {
+        margin-top: 16px;
+    }
+
+    .oksize {
+        display: inline-block;
+
+        >a {
+            display: inline-block;
+            margin: 0em 0.25rem 0.5rem;
+            width: 294px;
+            height: auto;
+        }
+    }
+}
+
+#組員Content {
+    height: calc(100% - 64px);
+    width: 100%;
+
+    >div {
+        display: table;
+        margin: 0px auto;
+        width: 896px;
+        height: 556px;
+    }
+
+    .fullvideo {
+        margin-top: 16px;
+    }
+
+    .oksize {
+        display: inline-block;
+
+        >a {
+            display: inline-block;
+            margin: 0em 0.25rem 0.5rem;
+            width: 294px;
+            height: auto;
+        }
+    }
+}
+
+.prev,
+.next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    margin-top: -22px;
+    padding: 16px;
+    color: black;
+    font-weight: bold;
+    font-size: 24px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover,
+.next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.dot {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin: 0 16px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+}
+
+.active,
+.dot:hover {
+    background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+    -webkit-animation-name: fade;
+    -webkit-animation-duration: 1.5s;
+    animation-name: fade;
+    animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+    from {
+        opacity: .4
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+@keyframes fade {
+    from {
+        opacity: .4
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+.menuabc {
+    position: absolute;
+    display: table;
+    bottom: 0px;
+    margin-bottom: 16px;
+    margin-left: 30%;
+    width: 600px !important;
+    height: 24px !important;
+}

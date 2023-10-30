@@ -1,0 +1,256 @@
+@charset "UTF-8";
+body {
+  height: 100%;
+  margin-top: 64px;
+  width: 100% !important;
+  background: gray;
+}
+
+.nav {
+  height: 64px;
+  -webkit-transition: -webkit-transform .3s ease-in-out;
+  transition: -webkit-transform .3s ease-in-out;
+  transition: transform .3s ease-in-out;
+  transition: transform .3s ease-in-out, -webkit-transform .3s ease-in-out;
+}
+
+.nav.hidden {
+  -webkit-transform: translateY(-64px);
+          transform: translateY(-64px);
+}
+
+.navicon {
+  margin-left: 128px;
+}
+
+@media all and (max-width: 1050px) {
+  .navicon {
+    margin: 0 32px !important;
+  }
+}
+
+@media all and (max-width: 1445px) {
+  .navicon {
+    margin: 0 64px;
+  }
+}
+
+.navitem {
+  margin-left: 4px;
+  font-size: 20px;
+  padding: 13px 16px !important;
+}
+
+.active {
+  font-weight: 700 !important;
+}
+
+section {
+  width: 100%;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  -webkit-transition: 0.5s opacity cubic-bezier(0.1, 0.7, 1, 0.1);
+  transition: 0.5s opacity cubic-bezier(0.1, 0.7, 1, 0.1);
+  padding: 64px 128px;
+}
+
+@media all and (max-width: 1050px) {
+  section {
+    padding: 24px 32px !important;
+  }
+}
+
+@media all and (max-width: 1445px) {
+  section {
+    padding: 24px 64px;
+  }
+}
+
+section > * {
+  color: whitesmoke;
+}
+
+#相關資訊 {
+  background-image: linear-gradient(-225deg, #2CD8D587 0%, #C5C1FF87 56%, #FFBAC387 100%);
+  margin-top: 64px;
+  height: 100%;
+  opacity: .4;
+}
+
+#相關資訊 .info > span > b {
+  font-size: 24px;
+  line-height: 2em;
+}
+
+#相關資訊 > div > h1 {
+  display: table;
+  margin: 25% auto 0px auto;
+  -webkit-transition: .5s ease-in-out;
+  transition: .5s ease-in-out;
+  font-size: 72px;
+}
+
+#相關資訊 > div > div > .info {
+  display: none;
+  float: left;
+  margin: 128px 16px 16px 16px;
+  font-size: 20px;
+  opacity: .3;
+  -webkit-transition: 0.5s ease-in-out, 0.8s opacity cubic-bezier(0.68, -0.55, 0.265, 1.4);
+  transition: 0.5s ease-in-out, 0.8s opacity cubic-bezier(0.68, -0.55, 0.265, 1.4);
+}
+
+#相關資訊 > div > div > .info > span > a {
+  color: #d82c2f !important;
+}
+
+#相關資訊 > div > div > .img {
+  display: none;
+  margin-top: 128px;
+  -webkit-transition: 0.5s ease-in-out, 0.8s opacity cubic-bezier(0.68, -0.55, 0.265, 1.4);
+  transition: 0.5s ease-in-out, 0.8s opacity cubic-bezier(0.68, -0.55, 0.265, 1.4);
+}
+
+#相關資訊:hover, #相關資訊.hovered {
+  opacity: 1;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+
+#相關資訊:hover > div > div > .info, #相關資訊.hovered > div > div > .info {
+  display: block;
+  opacity: 1;
+}
+
+#相關資訊:hover > div > div > .img, #相關資訊.hovered > div > div > .img {
+  display: block;
+  opacity: 1;
+}
+
+#相關資訊:hover > div > h1, #相關資訊.hovered > div > h1 {
+  margin-top: calc(10% - 100px);
+}
+
+#計畫總覽 {
+  background-image: linear-gradient(225deg, #2CD8D487 0%, #6B8DD487 48%, #8E37D487 100%);
+  opacity: .4;
+}
+
+#計畫總覽:hover, #計畫總覽.hovered {
+  opacity: 1;
+}
+
+#計畫總覽 > div > h1 {
+  position: relative;
+  display: table;
+  top: 64px;
+  margin: 0px auto;
+  font-size: 72px;
+}
+
+#計畫總覽 > div > div > .info {
+  display: block;
+  position: relative;
+  margin: 128px 16px 16px 16px;
+  font-size: 20px;
+  -webkit-transition: .5s ease-in;
+  transition: .5s ease-in;
+  line-height: 2em;
+  float: left;
+}
+
+#計畫總覽 > div > div > .info > span > b {
+  font-size: 24px;
+  line-height: 3em;
+}
+
+#計畫總覽 > div > div > .img > img {
+  margin-top: 128px !important;
+}
+
+#計畫要素 {
+  background-image: linear-gradient(-225deg, #5271C487 0%, #B19FF487 48%, #ECA1F487 100%);
+  opacity: .4;
+}
+
+#計畫要素:hover, #計畫要素.hovered {
+  opacity: 1;
+}
+
+#計畫要素 > div > h1 {
+  position: relative;
+  display: table;
+  top: 64px;
+  margin: 0px auto;
+  font-size: 72px;
+}
+
+#計畫要素 > .info {
+  margin: 128px 16px 16px 16px;
+  font-size: 20px;
+  -webkit-transition: .7s ease-in;
+  transition: .7s ease-in;
+  line-height: 2em;
+}
+
+#計畫要素 > .info > span {
+  margin-bottom: 2.5em;
+}
+
+#計畫要素 > .info > span > h3 > .image {
+  margin-left: 24px;
+}
+
+#計畫要素 > .info > span > b {
+  font-size: 24px;
+  line-height: 3em;
+}
+
+#計畫要素 > .info > span > h3 {
+  font-size: 20px;
+  font-weight: lighter !important;
+}
+
+#計畫貢獻 {
+  background-image: linear-gradient(225deg, #7742B487 0%, #F180F487 52%, #FD8BD487 100%);
+  opacity: .4;
+  padding: 64px 128px;
+}
+
+#計畫貢獻:hover, #計畫貢獻.hovered {
+  opacity: 1;
+}
+
+#計畫貢獻 > div > h1 {
+  position: relative;
+  font-size: 72px;
+  margin: 0px auto;
+  top: 64px;
+}
+
+#計畫貢獻 > div > table {
+  margin: 128px auto 0px auto;
+  font-size: 24px;
+  line-height: 2em;
+  -webkit-transition: .7s ease-in;
+  transition: .7s ease-in;
+}
+
+#計畫貢獻 > div > span > a {
+  color: whitesmoke !important;
+}
+
+.returnindex {
+  bottom: -10px;
+  letter-spacing: 1em;
+}
+
+i {
+  font-style: normal !important;
+  opacity: .7;
+  font-size: 18px;
+  text-align: center;
+}
+/*# sourceMappingURL=narrative.css.map */
