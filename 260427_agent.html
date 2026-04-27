@@ -535,7 +535,7 @@ td.ok { color: var(--accent); }
             <span>wm <span>Hyprland</span></span>
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>01</span> / 18</div>
+    <div class="slide-num">SLIDE <span>01</span> / 20</div>
 </section>
 
 <!-- ============================================================
@@ -564,11 +564,90 @@ td.ok { color: var(--accent); }
             </div>
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>02</span> / 18</div>
+    <div class="slide-num">SLIDE <span>02</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 03 — 為什麼 agent 對我特別好用
+     SLIDE 03 — 什麼是 dotfile / Linux ricing（新增）
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~/.config</span><span class="cmd"> $ ls -la | head</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">先說：什麼是 <span class="accent">dotfile</span> / Linux ricing</h2>
+        <div class="cols-2">
+            <ul class="bullet-list reveal">
+                <li><strong>dotfile</strong> ＝ home 底下、檔名以 <code>.</code> 開頭的設定檔（<code>.config/</code>、<code>.bashrc</code>、<code>hyprland.conf</code>...）</li>
+                <li>Linux 把<em>桌面、視窗、面板、字型、鍵盤</em>幾乎全部都用<strong>純文字檔</strong>描述</li>
+                <li><strong>ricing</strong> ＝ 把這些檔案改成自己想要的樣子，從外觀到工作流程通通客製</li>
+                <li>同一台機器、不同人的 dotfile，桌面可以長得<em>完全不一樣</em></li>
+                <li>因為改的是文字檔，所以可以直接 <code>git</code> 版控、跨機同步 ── 也剛好是 AI agent 最擅長處理的形式</li>
+            </ul>
+            <div class="reveal">
+                <img src="https://github.com/user-attachments/assets/c51bed8b-3670-4d4c-9074-873be224fb8e"
+                     alt="end-4/dots-hyprland window management overview"
+                     loading="lazy"
+                     style="width:100%; max-height:min(48vh, 380px); object-fit:contain; border:1px solid var(--bg-elev); border-radius:6px;" />
+                <p style="font-size:var(--small-size); color:var(--text-dim); text-align:center; margin-top:0.4em;">
+                    範例：<code>end-4/dots-hyprland</code> 的 workspace overview
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>03</span> / 20</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 04 — Hyprland ricing 圖庫（新增）
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~/.config/hypr</span><span class="cmd"> $ feh ./showcase/*.png</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">長什麼樣子 ── <span class="accent">end-4/dots-hyprland</span></h2>
+        <div class="reveal" style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(0.5rem, 1.2vw, 1rem);">
+            <figure style="margin:0; display:flex; flex-direction:column; gap:0.3em;">
+                <img src="https://github.com/user-attachments/assets/5d4e7d07-d0b4-4406-a4c9-ed7ba90e3fe4"
+                     alt="AI panel and settings app"
+                     loading="lazy"
+                     style="width:100%; max-height:32vh; object-fit:contain; border:1px solid var(--bg-elev); border-radius:6px;" />
+                <figcaption style="font-size:var(--small-size); color:var(--text-secondary);">→ 內建 AI 面板 / 設定 app</figcaption>
+            </figure>
+            <figure style="margin:0; display:flex; flex-direction:column; gap:0.3em;">
+                <img src="https://github.com/user-attachments/assets/6a32395f-9437-4192-8faf-2951a9e84cbe"
+                     alt="various widgets"
+                     loading="lazy"
+                     style="width:100%; max-height:32vh; object-fit:contain; border:1px solid var(--bg-elev); border-radius:6px;" />
+                <figcaption style="font-size:var(--small-size); color:var(--text-secondary);">→ 媒體 / 通知 / 系統資訊 widget</figcaption>
+            </figure>
+            <figure style="margin:0; display:flex; flex-direction:column; gap:0.3em;">
+                <img src="https://github.com/user-attachments/assets/c51bed8b-3670-4d4c-9074-873be224fb8e"
+                     alt="window management"
+                     loading="lazy"
+                     style="width:100%; max-height:32vh; object-fit:contain; border:1px solid var(--bg-elev); border-radius:6px;" />
+                <figcaption style="font-size:var(--small-size); color:var(--text-secondary);">→ Tile 視窗管理 + workspace overview</figcaption>
+            </figure>
+            <figure style="margin:0; display:flex; flex-direction:column; gap:0.3em;">
+                <img src="https://github.com/user-attachments/assets/98703a66-0743-439f-a721-cef7afa6ab95"
+                     alt="orange theme"
+                     loading="lazy"
+                     style="width:100%; max-height:32vh; object-fit:contain; border:1px solid var(--bg-elev); border-radius:6px;" />
+                <figcaption style="font-size:var(--small-size); color:var(--text-secondary);">→ 從桌布自動生成 Material 配色</figcaption>
+            </figure>
+        </div>
+        <p class="reveal" style="font-size:var(--small-size); color:var(--text-dim); text-align:center;">
+            這些畫面全是「打字改設定檔」做出來的 ── 沒有 GUI 設定面板。我的環境就是這類 Hyprland setup 的衍生版。
+        </p>
+    </div>
+    <div class="slide-num">SLIDE <span>04</span> / 20</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 05 — 為什麼 agent 對我特別好用
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -587,11 +666,11 @@ td.ok { color: var(--accent); }
             重點：我不是在「用 AI 取代查資料」，我是<strong>讓一個讀過全網 Linux 文件的助理，直接動我的系統</strong>。
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>03</span> / 18</div>
+    <div class="slide-num">SLIDE <span>05</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 04 — tool_use
+     SLIDE 06 — tool_use
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -621,11 +700,11 @@ td.ok { color: var(--accent); }
             </div>
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>04</span> / 18</div>
+    <div class="slide-num">SLIDE <span>06</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 05 — stdin / tmux 給 root 權限
+     SLIDE 07 — stdin / tmux 給 root 權限
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -651,11 +730,11 @@ $ claude            <span class="c"># 在同一 pane 啟動 agent</span>
 <span class="c"># 都吃這份 cache，不會卡 stdin。</span></pre>
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>05</span> / 18</div>
+    <div class="slide-num">SLIDE <span>07</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 06 — 任務一介紹
+     SLIDE 08 — 任務一介紹
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -678,11 +757,11 @@ $ claude            <span class="c"># 在同一 pane 啟動 agent</span>
             <li>產出：兩個自動化 shell script（<code>gpu-enable-passthrough.sh</code> / <code>gpu-return-to-host.sh</code>）</li>
         </ul>
     </div>
-    <div class="slide-num">SLIDE <span>06</span> / 18</div>
+    <div class="slide-num">SLIDE <span>08</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 07 — 硬體環境
+     SLIDE 09 — 硬體環境
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -710,11 +789,11 @@ $ claude            <span class="c"># 在同一 pane 啟動 agent</span>
             這套組合最關鍵的點：<strong>Z590 把 RTX 3060 跟 NVMe 系統碟塞在同一個 IOMMU group</strong>。
         </p>
     </div>
-    <div class="slide-num">SLIDE <span>07</span> / 18</div>
+    <div class="slide-num">SLIDE <span>09</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 08 — 關卡 1: BIOS VT-d
+     SLIDE 10 — 關卡 1: BIOS VT-d
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -739,11 +818,11 @@ $ ls /sys/kernel/iommu_groups/ | wc -l
 <span class="s">22</span>          <span class="c"># 從 0 到 22</span></pre>
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>08</span> / 18</div>
+    <div class="slide-num">SLIDE <span>10</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 09 — 關卡 2: GRUB kernel args
+     SLIDE 11 — 關卡 2: GRUB kernel args
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -771,11 +850,11 @@ $ ls /sys/kernel/iommu_groups/ | wc -l
             </table>
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>09</span> / 18</div>
+    <div class="slide-num">SLIDE <span>11</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 10 — 關卡 3: IOMMU group 衝突
+     SLIDE 12 — 關卡 3: IOMMU group 衝突
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -806,11 +885,11 @@ Group 1:
             裝 linux-zen 又踩雷：<code>nvidia-open</code> 不是 DKMS 版，只為 stock kernel 編譯 → linux-zen 重建 initramfs 報 <code>Failed to find module 'nvidia'</code>。換成 <code>nvidia-open-dkms</code> 才解。
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>10</span> / 18</div>
+    <div class="slide-num">SLIDE <span>12</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 11 — 關卡 4: nvidia 一直搶綁
+     SLIDE 13 — 關卡 4: nvidia 一直搶綁
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -837,11 +916,11 @@ Group 1:
             Agent 的價值在這一格體現：它讀過<em>夠多 dracut 文件 + 夠多 EndeavourOS 包行為</em>，才會去找這個別人沒寫的 <code>eos_nvidia_open.conf</code>。
         </p>
     </div>
-    <div class="slide-num">SLIDE <span>11</span> / 18</div>
+    <div class="slide-num">SLIDE <span>13</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 12 — 成果
+     SLIDE 14 — 成果
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -866,11 +945,11 @@ Group 1:
             兩個裝置都被 <code>vfio-pci</code> 接管 → 已經準備好給 VM 用。整個過程的 trace、配置檔、dracut 重建都是 agent 跑的，我只負責輸入密碼跟重開機。
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>12</span> / 18</div>
+    <div class="slide-num">SLIDE <span>14</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 13 — VM 端踩雷
+     SLIDE 15 — VM 端踩雷
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -902,11 +981,11 @@ Group 1:
             </div>
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>13</span> / 18</div>
+    <div class="slide-num">SLIDE <span>15</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 14 — 任務二: osu! tablet 卡頓診斷
+     SLIDE 16 — 任務二: osu! tablet 卡頓診斷
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -928,11 +1007,11 @@ Group 1:
             診斷出「不是 CPU bound 是 USB jitter」這個結論，比解決它更重要 —— 它告訴我加 vCPU 或開 HT 都不會解，<strong>方向別走錯</strong>。
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>14</span> / 18</div>
+    <div class="slide-num">SLIDE <span>16</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 15 — 解法: isolcpus + emulatorpin
+     SLIDE 17 — 解法: isolcpus + emulatorpin
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -970,11 +1049,11 @@ rcu_nocbs=0-7
             社群公認的「天花板」是<strong>整張 PCIe USB 卡直通</strong>，繞過 QEMU emulation。我目前到這裡已經夠順，先不買卡。
         </p>
     </div>
-    <div class="slide-num">SLIDE <span>15</span> / 18</div>
+    <div class="slide-num">SLIDE <span>17</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 16 — 順手做：Hyprland 延遲
+     SLIDE 18 — 順手做：Hyprland 延遲
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -1004,11 +1083,11 @@ windowrule = <span class="k">match:class</span> .*osu.*, <span class="k">immedia
             這裡 agent 直接幫我<strong>挑掉一個雷</strong>：osu-winello wiki 寫的 <code>device { name = ... output = DP-X }</code> 段落跟延遲無關（那是 Artist Mode 螢幕映射的修法），加上去等於佔記憶體。
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>16</span> / 18</div>
+    <div class="slide-num">SLIDE <span>18</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 17 — Claude Code vs Codex 分工
+     SLIDE 19 — Claude Code vs Codex 分工
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -1045,11 +1124,11 @@ $ ./gpu-enable-passthrough.sh --reboot
             </div>
         </div>
     </div>
-    <div class="slide-num">SLIDE <span>17</span> / 18</div>
+    <div class="slide-num">SLIDE <span>19</span> / 20</div>
 </section>
 
 <!-- ============================================================
-     SLIDE 18 — 心得 / Q&A
+     SLIDE 20 — 心得 / Q&A
 ============================================================ -->
 <section class="slide">
     <div class="shell-bar">
@@ -1072,7 +1151,7 @@ $ ./gpu-enable-passthrough.sh --reboot
             $ Q&amp;A<span class="cursor"></span>
         </p>
     </div>
-    <div class="slide-num">SLIDE <span>18</span> / 18</div>
+    <div class="slide-num">SLIDE <span>20</span> / 20</div>
 </section>
 
 <script>
