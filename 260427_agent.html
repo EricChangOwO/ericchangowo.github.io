@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>用 Claude Code + Codex 修 Linux 日常問題</title>
+
+<!-- Fonts: JetBrains Mono (Terminal Green preset) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME: TERMINAL GREEN (customized)
+   GitHub-dark base, mono everywhere, green accents,
+   coral for warnings, cyan for variables.
+   =========================================== */
+:root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-elev: #1c2330;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-dim: #6e7681;
+    --accent: #39d353;            /* terminal green */
+    --accent-soft: rgba(57,211,83,0.18);
+    --accent-glow: rgba(57,211,83,0.35);
+    --warn: #ff7b72;              /* coral — used for 踩雷 / errors */
+    --hint: #79c0ff;              /* cyan — used for variables / paths */
+    --gold: #d2a8ff;              /* purple — used for keywords */
+
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --title-size: clamp(1.6rem, 4.5vw, 3.4rem);
+    --h2-size: clamp(1.2rem, 3vw, 2.1rem);
+    --h3-size: clamp(0.95rem, 2vw, 1.35rem);
+    --body-size: clamp(0.78rem, 1.3vw, 1.05rem);
+    --small-size: clamp(0.65rem, 1vw, 0.85rem);
+    --code-size: clamp(0.65rem, 1.05vw, 0.95rem);
+
+    --slide-padding: clamp(1rem, 4vw, 4rem);
+    --content-gap: clamp(0.5rem, 2vw, 1.6rem);
+    --element-gap: clamp(0.25rem, 1vw, 0.8rem);
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-normal: 0.55s;
+}
+
+/* ===========================================
+   VIEWPORT FITTING (mandatory base)
+   =========================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+}
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+body { font-size: var(--body-size); line-height: 1.55; }
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: var(--slide-padding);
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    gap: var(--content-gap);
+}
+
+.card, .container, .content-box {
+    max-width: min(94vw, 1200px);
+    max-height: min(82vh, 760px);
+}
+
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li {
+    font-size: var(--body-size);
+    line-height: 1.45;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+img, .image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.25rem, 4.2vw, 2.4rem);
+        --h2-size: clamp(1rem, 3vw, 1.7rem);
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+    }
+    .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+    :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.65rem, 1vw, 0.85rem);
+    }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+    .grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   TERMINAL ATMOSPHERE: scanlines + glow
+   =========================================== */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(57,211,83,0.025) 0px,
+            rgba(57,211,83,0.025) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    mix-blend-mode: screen;
+}
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 101;
+    background: radial-gradient(ellipse at center,
+        transparent 55%,
+        rgba(0,0,0,0.5) 100%);
+}
+
+/* ===========================================
+   SLIDE FRAME — every slide has a terminal "shell prompt" header
+   =========================================== */
+.shell-bar {
+    position: absolute;
+    top: clamp(0.6rem, 2vh, 1.4rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    align-items: center;
+    gap: clamp(0.4rem, 1vw, 0.9rem);
+    font-size: var(--small-size);
+    color: var(--text-dim);
+    z-index: 5;
+}
+.shell-bar .dot {
+    width: clamp(7px, 0.85vw, 11px);
+    height: clamp(7px, 0.85vw, 11px);
+    border-radius: 50%;
+    background: var(--text-dim);
+    opacity: 0.6;
+}
+.shell-bar .dot.r { background: #ff5f56; }
+.shell-bar .dot.y { background: #ffbd2e; }
+.shell-bar .dot.g { background: #27c93f; }
+.shell-bar .path { color: var(--accent); margin-left: clamp(0.3rem,1vw,0.8rem); }
+.shell-bar .cmd { color: var(--text-secondary); }
+.shell-bar .meta { margin-left: auto; color: var(--text-dim); font-size: clamp(0.55rem, 0.85vw, 0.75rem); }
+
+.slide-num {
+    position: absolute;
+    bottom: clamp(0.7rem, 2vh, 1.4rem);
+    right: var(--slide-padding);
+    font-size: var(--small-size);
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    z-index: 5;
+}
+.slide-num span { color: var(--accent); }
+
+/* ===========================================
+   TYPOGRAPHY
+   =========================================== */
+h1.title {
+    font-size: var(--title-size);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+h2 {
+    font-size: var(--h2-size);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+}
+h2 .accent { color: var(--accent); }
+h2::before {
+    content: "# ";
+    color: var(--accent);
+    font-weight: 700;
+}
+h3 {
+    font-size: var(--h3-size);
+    font-weight: 600;
+    color: var(--accent);
+}
+p { font-size: var(--body-size); color: var(--text-secondary); max-width: 80ch; }
+strong { color: var(--text-primary); font-weight: 700; }
+em { color: var(--hint); font-style: normal; }
+
+ul.bullet-list, ul.feature-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+ul.bullet-list li {
+    color: var(--text-secondary);
+    padding-left: 1.4em;
+    position: relative;
+}
+ul.bullet-list li::before {
+    content: ">";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+}
+ul.bullet-list li strong { color: var(--text-primary); }
+
+/* code blocks */
+pre, code {
+    font-family: var(--font-mono);
+    font-size: var(--code-size);
+}
+pre {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-elev);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: clamp(0.6rem, 1.5vw, 1.2rem) clamp(0.8rem, 2vw, 1.5rem);
+    overflow: hidden;
+    line-height: 1.55;
+    max-height: min(58vh, 480px);
+    color: var(--text-primary);
+}
+pre .c { color: var(--text-dim); }       /* comment */
+pre .k { color: var(--gold); }            /* keyword */
+pre .v { color: var(--hint); }            /* var/path */
+pre .s { color: var(--accent); }          /* string/value */
+pre .w { color: var(--warn); }            /* warning/error */
+
+p code, li code, td code {
+    background: var(--bg-elev);
+    border: 1px solid rgba(57,211,83,0.2);
+    border-radius: 4px;
+    padding: 0.05em 0.4em;
+    color: var(--accent);
+}
+
+/* tables (踩雷總結 etc.) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--body-size);
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-elev);
+    border-radius: 6px;
+    overflow: hidden;
+}
+th, td {
+    padding: clamp(0.35rem, 0.9vw, 0.65rem) clamp(0.6rem, 1.2vw, 1rem);
+    text-align: left;
+    border-bottom: 1px solid var(--bg-elev);
+    vertical-align: top;
+}
+th {
+    background: var(--bg-elev);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: var(--small-size);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+tr:last-child td { border-bottom: none; }
+td { color: var(--text-secondary); }
+td.warn { color: var(--warn); }
+td.ok { color: var(--accent); }
+
+/* warning callout */
+.callout {
+    background: rgba(255,123,114,0.08);
+    border-left: 3px solid var(--warn);
+    border-radius: 4px;
+    padding: clamp(0.5rem, 1.2vw, 0.9rem) clamp(0.7rem, 1.6vw, 1.2rem);
+    font-size: var(--body-size);
+    color: var(--text-primary);
+}
+.callout::before {
+    content: "WARN  ";
+    color: var(--warn);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+.callout.ok {
+    background: rgba(57,211,83,0.08);
+    border-left-color: var(--accent);
+}
+.callout.ok::before {
+    content: "OK    ";
+    color: var(--accent);
+}
+
+.kbd {
+    background: var(--bg-elev);
+    border: 1px solid rgba(57,211,83,0.3);
+    border-radius: 4px;
+    padding: 0.1em 0.5em;
+    font-size: 0.85em;
+    color: var(--accent);
+}
+
+/* two-column layout */
+.cols-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(0.8rem, 2vw, 2rem);
+    align-items: start;
+}
+@media (max-width: 720px) {
+    .cols-2 { grid-template-columns: 1fr; }
+}
+
+/* card stack */
+.card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.4rem, 1.2vh, 1rem);
+}
+.card-row {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-elev);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: clamp(0.5rem, 1.2vw, 0.9rem) clamp(0.8rem, 1.6vw, 1.2rem);
+}
+.card-row.warn { border-left-color: var(--warn); }
+.card-row .label {
+    font-size: var(--small-size);
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.2em;
+}
+.card-row.warn .label { color: var(--warn); }
+.card-row .body { font-size: var(--body-size); color: var(--text-primary); }
+.card-row .body .dim { color: var(--text-secondary); }
+
+/* TITLE slide special */
+.title-slide {
+    justify-content: center;
+    align-items: flex-start;
+}
+.title-slide .slide-content { justify-content: center; gap: clamp(0.4rem, 1.5vw, 1.2rem); }
+.title-slide .pre-title {
+    font-size: var(--small-size);
+    color: var(--accent);
+    letter-spacing: 0.2em;
+}
+.title-slide .pre-title::before { content: "$ "; }
+.title-slide h1.title { max-width: 22ch; }
+.title-slide .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(0.6rem, 2vw, 1.6rem);
+    margin-top: clamp(0.5rem, 2vh, 1.5rem);
+    color: var(--text-secondary);
+    font-size: var(--body-size);
+}
+.title-slide .meta-line span span { color: var(--accent); }
+
+/* blinking cursor */
+.cursor {
+    display: inline-block;
+    width: 0.55ch;
+    height: 1em;
+    background: var(--accent);
+    vertical-align: -0.12em;
+    margin-left: 0.2ch;
+    animation: blink 1s steps(2, end) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* progress bar + nav dots */
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    z-index: 200;
+    transition: width 0.2s linear;
+}
+.nav-dots {
+    position: fixed;
+    right: clamp(0.5rem, 2vw, 1.5rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.8vh, 8px);
+    z-index: 50;
+}
+.nav-dots button {
+    width: clamp(6px, 0.8vw, 9px);
+    height: clamp(6px, 0.8vw, 9px);
+    background: transparent;
+    border: 1px solid var(--text-dim);
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.2s;
+}
+.nav-dots button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+.keyboard-hint {
+    position: fixed;
+    bottom: clamp(0.6rem, 2vh, 1.2rem);
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--text-dim);
+    font-size: var(--small-size);
+    letter-spacing: 0.1em;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* ===========================================
+   REVEAL ANIMATION
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+        opacity var(--duration-normal) var(--ease-out-expo),
+        transform var(--duration-normal) var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+.slide.visible .reveal:nth-child(1) { transition-delay: 0.05s; }
+.slide.visible .reveal:nth-child(2) { transition-delay: 0.15s; }
+.slide.visible .reveal:nth-child(3) { transition-delay: 0.25s; }
+.slide.visible .reveal:nth-child(4) { transition-delay: 0.35s; }
+.slide.visible .reveal:nth-child(5) { transition-delay: 0.45s; }
+.slide.visible .reveal:nth-child(6) { transition-delay: 0.55s; }
+</style>
+</head>
+
+<body>
+
+<!-- progress bar -->
+<div class="progress-bar"></div>
+
+<!-- nav dots (populated by JS) -->
+<nav class="nav-dots" aria-label="slide navigation"></nav>
+
+<div class="keyboard-hint">↑↓ / SPACE / SCROLL</div>
+
+<!-- ============================================================
+     SLIDE 01 — TITLE
+============================================================ -->
+<section class="slide title-slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~/talks/ai-introduction</span>
+        <span class="cmd"> $ ./present.sh</span>
+        <span class="meta">2026-04-27</span>
+    </div>
+    <div class="slide-content">
+        <div class="pre-title reveal">cat presentation.md | head</div>
+        <h1 class="title reveal">用 Claude Code + Codex<br/>修我的 Linux 日常<span class="cursor"></span></h1>
+        <p class="reveal" style="font-size: var(--h3-size); color: var(--text-primary);">
+            GPU 直通到 Windows VM、osu! tablet 卡頓、Hyprland 延遲調整 ——<br/>
+            一個 Arch Linux 使用者怎麼把 AI agent 當系統管理員用
+        </p>
+        <div class="meta-line reveal">
+            <span>host <span>EndeavourOS · linux-zen 6.19</span></span>
+            <span>shell <span>fish + tmux</span></span>
+            <span>wm <span>Hyprland</span></span>
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>01</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 02 — whoami
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ whoami</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">whoami</h2>
+        <div class="cols-2">
+            <ul class="bullet-list reveal">
+                <li><strong>Arch 系（EndeavourOS）使用者</strong>，桌面 Hyprland、shell 是 fish</li>
+                <li>主機是<strong>雙顯卡</strong>：AMD RX 580 給 host、NVIDIA RTX 3060 留著直通給 Windows VM</li>
+                <li>常用工具：<code>tmux</code>、<code>btop</code>、<code>virt-manager</code>、<code>looking-glass</code></li>
+                <li>遇到的真實問題：<em>osu! 在 Linux 上卡頓</em>、Windows-only 軟體、需要 NVIDIA 跑機器學習</li>
+            </ul>
+            <div class="reveal">
+                <pre><span class="c"># uname -r</span>
+6.19.14-zen1-1-zen
+
+<span class="c"># 為什麼是我這套組合很重要 —</span>
+<span class="c"># 後面會解釋 AI agent 為什麼對我特別好用</span></pre>
+            </div>
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>02</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 03 — 為什麼 agent 對我特別好用
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ man agent_alignment</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">為什麼這些 agent 對 <span class="accent">我</span> 特別有用</h2>
+        <ul class="bullet-list reveal">
+            <li>Claude Code、Codex 這類 agent 的訓練資料裡，<strong>Linux / bash / man pages / Stack Overflow</strong> 是含量極高的部分</li>
+            <li>而我整套系統剛好就是 <em>bash + systemd + dracut + libvirt + GRUB + Linux kernel cmdline</em> —— 跟訓練資料的分布<strong>高度重疊</strong></li>
+            <li>對 agent 來說：<code>/etc/default/grub</code>、<code>journalctl -k</code>、<code>lspci -nnk</code> 這些路徑與輸出格式都「在它的世界觀裡」</li>
+            <li>所以它做事不是憑想像，是憑大量已經看過的真實系統慣例</li>
+        </ul>
+        <div class="callout ok reveal">
+            重點：我不是在「用 AI 取代查資料」，我是<strong>讓一個讀過全網 Linux 文件的助理，直接動我的系統</strong>。
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>03</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 04 — tool_use
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ describe tool_use</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">tool_use ── agent 不只是回字串</h2>
+        <div class="cols-2">
+            <ul class="bullet-list reveal">
+                <li>傳統 chat：你問 → 模型答字</li>
+                <li>tool_use：模型在回答中間，<strong>主動呼叫工具</strong>（<code>Bash</code>、<code>Read</code>、<code>Edit</code>、<code>WebFetch</code>...），讀回結果再繼續推理</li>
+                <li>對我來說等於：模型可以<em>真的執行</em> <code>lspci</code>、看 <code>dmesg</code>、改我的 <code>/etc/dracut.conf.d/</code></li>
+                <li>每一步驟它「看到」結果再決定下一步，跟人在 troubleshoot 的迴圈一樣</li>
+            </ul>
+            <div class="reveal">
+                <pre><span class="c">// agent 的一輪互動</span>
+<span class="k">user</span>: 「3060 一直被 nvidia 搶走」
+<span class="k">assistant</span>:
+  <span class="v">tool_use(Bash, "lspci -nnk -s 01:00.0")</span>
+  → "<span class="w">Kernel driver in use: nvidia</span>"
+  <span class="v">tool_use(Read, "/etc/modprobe.d/")</span>
+  → 看到 softdep
+  <span class="v">tool_use(Bash, "lsinitrd ...")</span>
+  → 發現 nvidia 在 initramfs 裡
+  <span class="s">「我知道為什麼了，要 blacklist」</span></pre>
+            </div>
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>04</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 05 — stdin / tmux 給 root 權限
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ sudo ./agent.sh   <span style="color:var(--warn)"># &lt;-- 這裡會卡</span></span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">stdin 的雷 ── 怎麼給 agent root 權限</h2>
+        <ul class="bullet-list reveal">
+            <li>Agent 透過 pipe 跟 shell 講話，<strong>沒有真正的 TTY</strong> → <code>sudo</code> 跳出密碼提示，agent 看不到、也輸入不了</li>
+            <li>把密碼塞進 prompt 不安全；改檔案權限太粗暴；用 <code>NOPASSWD sudoers</code> 等於開後門</li>
+            <li>我的解法：把 agent 跑在一個 <strong><code>tmux</code> session</strong> 裡，這個 session 的 user shell <em>已經 sudo -v 過</em></li>
+            <li>sudo 的 timestamp cache（預設 15 分鐘）讓 agent 在同一 session 內呼出的 <code>sudo</code> 直接通過 —— 不需要再輸入密碼</li>
+            <li>需要時我手動再 <code>sudo -v</code> 續杯，主控權永遠在我手上</li>
+        </ul>
+        <div class="reveal">
+            <pre><span class="c"># 我實際的開場流程</span>
+$ tmux new -s claude
+$ <span class="k">sudo -v</span>          <span class="c"># 在這個 session 緩存憑證</span>
+[sudo] password for e0pwr: ********
+$ claude            <span class="c"># 在同一 pane 啟動 agent</span>
+<span class="c"># 之後 agent 跑的每一個 sudo dracut / sudo grub-mkconfig，</span>
+<span class="c"># 都吃這份 cache，不會卡 stdin。</span></pre>
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>05</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 06 — 任務一介紹
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~/projects</span><span class="cmd"> $ task --start gpu-passthrough</span>
+    </div>
+    <div class="slide-content">
+        <div class="reveal">
+            <p style="color: var(--accent); letter-spacing: 0.2em; font-size: var(--small-size);">CASE STUDY 01</p>
+        </div>
+        <h1 class="title reveal" style="font-size: clamp(1.8rem, 5vw, 3.6rem);">
+            把 RTX 3060 直通給 Windows VM
+        </h1>
+        <p class="reveal" style="font-size: var(--h3-size); color: var(--text-primary);">
+            AMD RX 580 留給 host 跑 Linux，NVIDIA RTX 3060 整張交給虛擬機。<br/>
+            目標：在 Linux host 裡開 Windows VM，跑只能在 Windows 跑的東西，<em>而且不犧牲遊戲效能</em>。
+        </p>
+        <ul class="bullet-list reveal">
+            <li>過程：<strong>4 個關卡</strong>，每一關都至少踩過一次雷</li>
+            <li>產出：兩個自動化 shell script（<code>gpu-enable-passthrough.sh</code> / <code>gpu-return-to-host.sh</code>）</li>
+        </ul>
+    </div>
+    <div class="slide-num">SLIDE <span>06</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 07 — 硬體環境
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ inxi -SMC</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">硬體環境</h2>
+        <div class="reveal">
+            <table>
+                <thead>
+                    <tr><th>角色</th><th>裝置</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>主機板</td><td>Gigabyte Z590 Vision</td><td>BIOS 要開 VT-d</td></tr>
+                    <tr><td>CPU</td><td>Intel i7-10700KF</td><td>8C/16T，後面 vCPU pin 會用到</td></tr>
+                    <tr><td>Host GPU</td><td>AMD RX 580</td><td>接螢幕、跑 Linux</td></tr>
+                    <tr><td class="ok">Passthrough GPU</td><td class="ok">NVIDIA RTX 3060 LHR</td><td class="ok">PCI <code>10de:2504 / 10de:228e</code></td></tr>
+                    <tr><td>OS</td><td>EndeavourOS</td><td>dracut（不是 mkinitcpio）</td></tr>
+                    <tr><td>Kernel</td><td>linux-zen 6.19.13</td><td>後面解釋為什麼不能用 stock kernel</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="reveal" style="color: var(--text-dim);">
+            這套組合最關鍵的點：<strong>Z590 把 RTX 3060 跟 NVMe 系統碟塞在同一個 IOMMU group</strong>。
+        </p>
+    </div>
+    <div class="slide-num">SLIDE <span>07</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 08 — 關卡 1: BIOS VT-d
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ ls /sys/kernel/iommu_groups/</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">關卡 <span class="accent">1</span> ── BIOS 沒開 VT-d</h2>
+        <ul class="bullet-list reveal">
+            <li>第一個徵兆：<code>/sys/kernel/iommu_groups/</code> <strong>是空的</strong></li>
+            <li>明明 GRUB 已經有 <code>intel_iommu=on</code>，<code>journalctl -k</code> 也看到 <code>DMAR: IOMMU enabled</code>（誤導）</li>
+            <li>Agent 幫我 cross-reference：「這行 log 只代表<em>軟體層啟用</em>，不代表硬體真的在工作」</li>
+            <li>正確判定：<code>ls /sys/firmware/acpi/tables/</code> 必須有 <code>DMAR</code> 表</li>
+        </ul>
+        <div class="callout reveal">
+            BIOS → <strong>Settings → Miscellaneous → Intel VT for Directed I/O (VT-d) → Enabled</strong>。
+            這一步全網很多教學跳過，因為「你應該已經開過了」。我沒開過。
+        </div>
+        <div class="reveal">
+            <pre><span class="c"># 開了之後</span>
+$ ls /sys/kernel/iommu_groups/ | wc -l
+<span class="s">22</span>          <span class="c"># 從 0 到 22</span></pre>
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>08</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 09 — 關卡 2: GRUB kernel args
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">/etc/default</span><span class="cmd"> $ cat grub</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">關卡 <span class="accent">2</span> ── kernel cmdline 四件套</h2>
+        <div class="reveal">
+            <pre><span class="k">GRUB_CMDLINE_LINUX_DEFAULT</span>=<span class="s">'... \
+  intel_iommu=on \
+  iommu=pt \
+  pcie_acs_override=downstream,multifunction \
+  vfio-pci.ids=10de:2504,10de:228e'</span></pre>
+        </div>
+        <div class="reveal">
+            <table>
+                <thead><tr><th>參數</th><th>用途</th></tr></thead>
+                <tbody>
+                    <tr><td><code>intel_iommu=on</code></td><td>啟用 Intel IOMMU</td></tr>
+                    <tr><td><code>iommu=pt</code></td><td>Passthrough 模式，host 損失極小</td></tr>
+                    <tr><td><code>pcie_acs_override=...</code></td><td>強制拆分 IOMMU group（需要 linux-zen）</td></tr>
+                    <tr><td><code>vfio-pci.ids=...</code></td><td>讓 vfio-pci 在最早期就綁住 RTX 3060</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>09</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 10 — 關卡 3: IOMMU group 衝突
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ for g in /sys/kernel/iommu_groups/*; do ls $g/devices; done</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">關卡 <span class="accent">3</span> ── GPU 跟系統碟在同一個 group</h2>
+        <div class="cols-2">
+            <div class="reveal">
+                <pre><span class="c"># 預設 kernel 看到的：</span>
+Group 1:
+  00:01.0  Intel PCIe Root Port (x16)
+  00:01.2  Intel PCIe Root Port (x4)
+  01:00.0  RTX 3060 VGA          <span class="s">← 要直通</span>
+  01:00.1  RTX 3060 Audio        <span class="s">← 要直通</span>
+  02:00.0  Samsung 970 EVO Plus  <span class="w">← 系統碟！</span>
+
+<span class="c"># 同一 group 必須整組一起直通 → host 沒系統碟可開機</span></pre>
+            </div>
+            <ul class="bullet-list reveal">
+                <li>Z590 的 CPU PCIe root port 把它們塞在一起，這是<em>主機板設計</em>，不是 BIOS 能改的</li>
+                <li>解法：<strong>linux-zen kernel</strong> 內建 ACS override patch，搭配 cmdline <code>pcie_acs_override=...</code> 把每個裝置拆成獨立 group</li>
+                <li>裝完之後 RTX 3060 跟 NVMe 各自獨立，可以單獨直通</li>
+            </ul>
+        </div>
+        <div class="callout reveal">
+            裝 linux-zen 又踩雷：<code>nvidia-open</code> 不是 DKMS 版，只為 stock kernel 編譯 → linux-zen 重建 initramfs 報 <code>Failed to find module 'nvidia'</code>。換成 <code>nvidia-open-dkms</code> 才解。
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>10</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 11 — 關卡 4: nvidia 一直搶綁
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ lspci -nnk -s 01:00.0 | grep "in use"</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">關卡 <span class="accent">4</span> ── nvidia 一直搶在 vfio-pci 前面</h2>
+        <ul class="bullet-list reveal">
+            <li>每次重開機：<code>Kernel driver in use: <span style="color:var(--warn)">nvidia</span></code> —— 不是我要的 vfio-pci</li>
+            <li>試過 <code>softdep nvidia pre: vfio-pci</code> → 在 dracut 環境<strong>沒效</strong></li>
+            <li>試過把 vfio-pci.conf 改名讓字母順序排前面 → <strong>還是被搶</strong></li>
+            <li>Agent 翻 <code>/etc/dracut.conf.d/</code> 發現：EndeavourOS 自帶的 <code>eos_nvidia_open.conf</code> 把 nvidia <em>強制</em>塞進 initramfs，比任何 softdep 都早</li>
+        </ul>
+        <div class="reveal">
+            <pre><span class="c"># 真正的解法：host 反正用 AMD 卡，根本不需要 nvidia driver</span>
+<span class="c"># /etc/modprobe.d/blacklist-nvidia.conf</span>
+<span class="k">blacklist</span> nvidia <span class="k">nvidia_modeset</span> nvidia_uvm nvidia_drm
+
+<span class="c"># /etc/dracut.conf.d/zz-no-nvidia.conf</span>
+<span class="k">omit_drivers</span>+=<span class="s">" nvidia nvidia_modeset nvidia_uvm nvidia_drm "</span></pre>
+        </div>
+        <p class="reveal" style="color: var(--text-dim);">
+            Agent 的價值在這一格體現：它讀過<em>夠多 dracut 文件 + 夠多 EndeavourOS 包行為</em>，才會去找這個別人沒寫的 <code>eos_nvidia_open.conf</code>。
+        </p>
+    </div>
+    <div class="slide-num">SLIDE <span>11</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 12 — 成果
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ lspci -nnk | grep -A3 "01:00"</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">成果驗證</h2>
+        <div class="reveal">
+            <pre><span class="s">01:00.0</span> VGA compatible controller [0300]: NVIDIA Corporation
+        GA106 [GeForce RTX 3060 Lite Hash Rate] [10de:2504]
+        Subsystem: ...
+        <span class="s">Kernel driver in use: vfio-pci</span>
+        Kernel modules: nouveau, nvidia_drm, nvidia
+
+<span class="s">01:00.1</span> Audio device [0403]: NVIDIA Corporation GA106 ...
+        Subsystem: ...
+        <span class="s">Kernel driver in use: vfio-pci</span>
+        Kernel modules: snd_hda_intel</pre>
+        </div>
+        <div class="callout ok reveal">
+            兩個裝置都被 <code>vfio-pci</code> 接管 → 已經準備好給 VM 用。整個過程的 trace、配置檔、dracut 重建都是 agent 跑的，我只負責輸入密碼跟重開機。
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>12</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 13 — VM 端踩雷
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ virsh start win10</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">VM + Looking Glass 端再踩一輪</h2>
+        <div class="card-stack">
+            <div class="card-row warn reveal">
+                <div class="label">network 'default' is not active</div>
+                <div class="body"><span class="dim">原因：</span>firewalld 缺 <code>libvirt</code> zone。
+                <span class="dim">解法：</span>重裝 libvirt → 重啟 firewalld → 重啟 libvirtd → 啟動 network，<strong>順序不能錯</strong>。</div>
+            </div>
+            <div class="card-row warn reveal">
+                <div class="label">Windows 只看到 1 顆 CPU</div>
+                <div class="body"><span class="dim">原因：</span>QEMU 預設 4 vCPU 當 4 個 socket，Windows Home 只認 1 socket。
+                <span class="dim">解法：</span>明確指定 <code>&lt;topology sockets='1' cores='4' threads='1'/&gt;</code>。</div>
+            </div>
+            <div class="card-row warn reveal">
+                <div class="label">Looking Glass: Failed to locate a valid output device</div>
+                <div class="body"><span class="dim">原因：</span>RTX 3060 沒接螢幕，DXGI 找不到 output。
+                <span class="dim">解法：</span>HDMI dummy plug（假負載），約 NTD 100–200。</div>
+            </div>
+            <div class="card-row warn reveal">
+                <div class="label">Windows 看到兩個螢幕（QXL + RTX 3060）</div>
+                <div class="body"><span class="dim">錯誤做法：</span>整個移除 SPICE → LG client 連不到、音效沒了。
+                <span class="dim">正確做法：</span>保留 SPICE 拿音效/clipboard，把 <code>&lt;video&gt;&lt;model type='none'/&gt;</code> 關掉 QXL。</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>13</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 14 — 任務二: osu! tablet 卡頓診斷
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~/projects</span><span class="cmd"> $ task --start vm-tuning</span>
+    </div>
+    <div class="slide-content">
+        <div class="reveal">
+            <p style="color: var(--accent); letter-spacing: 0.2em; font-size: var(--small-size);">CASE STUDY 02</p>
+        </div>
+        <h2 class="reveal">osu! tablet 在 VM 裡<span class="accent"> 持續輸入時 </span>會卡頓</h2>
+        <ul class="bullet-list reveal">
+            <li>現象：一般使用流暢、auto mode 流暢，<strong>tablet 持續輸入時板子會跳</strong></li>
+            <li>btop 顯示 vCPU 那 6 個核心都還有閒置（30–78%、loadavg ~4）—— <em>不是算力不夠</em></li>
+            <li>Agent 推論：USB device passthrough 路徑是 <code>host USB → QEMU usb-host → emulated qemu-xhci → guest</code></li>
+            <li>每個 USB packet 都 <code>vmexit</code> 進 host 處理一次再回去 → 連續輸入時延遲抖動很有感、停下來時鏈路空就不卡</li>
+        </ul>
+        <div class="callout ok reveal">
+            診斷出「不是 CPU bound 是 USB jitter」這個結論，比解決它更重要 —— 它告訴我加 vCPU 或開 HT 都不會解，<strong>方向別走錯</strong>。
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>14</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 15 — 解法: isolcpus + emulatorpin
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ taskset --check</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">解法：把 emulator thread 隔離出去</h2>
+        <div class="cols-2">
+            <div class="reveal">
+                <pre><span class="c"># 1) host kernel cmdline</span>
+isolcpus=0-7
+nohz_full=0-7
+rcu_nocbs=0-7
+
+<span class="c"># 2) libvirt domain XML</span>
+&lt;cputune&gt;
+  &lt;vcpupin vcpu='0' cpuset='0'/&gt;
+  ... <span class="c">(0-5 → CPU 0-5)</span>
+  &lt;<span class="k">emulatorpin</span> cpuset='6-7'/&gt;
+&lt;/cputune&gt;</pre>
+            </div>
+            <div class="reveal">
+                <table>
+                    <thead><tr><th>嘗試</th><th>結果</th></tr></thead>
+                    <tbody>
+                        <tr><td>isolcpus + emulatorpin</td><td class="ok">✓ 卡頓明顯改善</td></tr>
+                        <tr><td>iothread + virtio-blk</td><td class="warn">✗ 現有 SATA bus 不支援</td></tr>
+                        <tr><td>FIFO realtime scheduler</td><td class="warn">✗ 卡 UEFI 開不了機</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <p class="reveal" style="color: var(--text-dim);">
+            社群公認的「天花板」是<strong>整張 PCIe USB 卡直通</strong>，繞過 QEMU emulation。我目前到這裡已經夠順，先不買卡。
+        </p>
+    </div>
+    <div class="slide-num">SLIDE <span>15</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 16 — 順手做：Hyprland 延遲
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~/.config/hypr</span><span class="cmd"> $ vim custom/general.conf</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">順手做的：Linux 端的 osu! 延遲調整</h2>
+        <ul class="bullet-list reveal">
+            <li>不是每件事都要進 VM。Linux 直接跑 osu! 也能很順，只是要關掉 compositor 的 vsync</li>
+            <li>Hyprland 0.54（end-4 fork）的關鍵兩行：<code>allow_tearing = true</code> + <code>windowrule = match:class .*osu.*, immediate 1</code></li>
+            <li>滑鼠加速也要關：<code>accel_profile = flat</code></li>
+        </ul>
+        <div class="reveal">
+            <pre><span class="c"># ~/.config/hypr/custom/general.conf</span>
+general { <span class="k">allow_tearing</span> = <span class="s">true</span> }
+
+input {
+    <span class="k">accel_profile</span> = <span class="s">flat</span>
+    <span class="k">sensitivity</span>   = <span class="s">0</span>     <span class="c"># Hyprland 中性值，不是歸零</span>
+}
+
+<span class="c"># ~/.config/hypr/custom/rules.conf</span>
+windowrule = <span class="k">match:class</span> .*osu.*, <span class="k">immediate</span> 1</pre>
+        </div>
+        <div class="callout reveal">
+            這裡 agent 直接幫我<strong>挑掉一個雷</strong>：osu-winello wiki 寫的 <code>device { name = ... output = DP-X }</code> 段落跟延遲無關（那是 Artist Mode 螢幕映射的修法），加上去等於佔記憶體。
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>16</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 17 — Claude Code vs Codex 分工
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ which-tool</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">兩個 agent 我怎麼分工</h2>
+        <div class="cols-2">
+            <div class="card-stack reveal">
+                <div class="card-row">
+                    <div class="label">Claude Code</div>
+                    <div class="body"><strong>診斷階段</strong>。讀 dracut log、跨檔案 trace 為什麼 nvidia 還在綁卡、判斷「不是 CPU bound 是 USB jitter」這種要看多個訊號的推理題。</div>
+                </div>
+                <div class="card-row">
+                    <div class="label">Codex</div>
+                    <div class="body"><strong>定型階段</strong>。把已經想清楚的流程封裝成腳本：<code>gpu-enable-passthrough.sh</code> / <code>gpu-return-to-host.sh</code>，包含備份、GRUB 修改、dracut 重建。</div>
+                </div>
+            </div>
+            <div class="reveal">
+                <pre><span class="c"># 我家裡實際的兩個腳本，</span>
+<span class="c"># 都是 Codex 寫的、Claude Code 校過：</span>
+
+$ ls -la ~/Documents/gpu-*.sh
+-rwxr-xr-x  gpu-enable-passthrough.sh
+-rwxr-xr-x  gpu-return-to-host.sh
+
+$ ./gpu-enable-passthrough.sh --reboot
+<span class="s">Switching RTX 3060 to VFIO mode...</span>
+<span class="s">Backups in: /etc/gpu-mode-backups/...</span>
+<span class="s">[reboot]</span>
+
+<span class="c"># 想跑機器學習就 ./gpu-return-to-host.sh</span></pre>
+            </div>
+        </div>
+    </div>
+    <div class="slide-num">SLIDE <span>17</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 18 — 心得 / Q&A
+============================================================ -->
+<section class="slide">
+    <div class="shell-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="path">~</span><span class="cmd"> $ tail -n 1 takeaways.md</span>
+    </div>
+    <div class="slide-content">
+        <h2 class="reveal">心得 <span class="accent">/</span> Q&amp;A</h2>
+        <ul class="bullet-list reveal">
+            <li>AI agent 不是「取代查資料」，是<strong>壓縮「讀文件 → 試 → 失敗 → 換解法」的迭代成本</strong>。我這次的 GPU passthrough，原本要花一週讀 wiki，實際兩個晚上做完</li>
+            <li>它對 <strong>Linux / bash 場景</strong>特別猛 —— 因為訓練資料本來就是這個語言寫的</li>
+            <li>真正的瓶頸是<strong>怎麼安全地給它權限</strong>（stdin / sudo / tmux），不是它聰不聰明</li>
+            <li>tool_use 是關鍵：能執行、能讀、能改 → 它才從「會講話的維基百科」變成「會動手的助理」</li>
+            <li>它仍然會錯。我的角色是<em>看著它跑、按 enter、隨時喊停</em>，不是放生</li>
+        </ul>
+        <div class="callout ok reveal">
+            如果你也是 Linux 使用者 —— 把你最痛的那件 sysadmin 雜事丟給它，會比你想像的順。
+        </div>
+        <p class="reveal" style="margin-top: clamp(0.5rem, 2vh, 1.2rem); font-size: var(--h3-size); color: var(--accent);">
+            $ Q&amp;A<span class="cursor"></span>
+        </p>
+    </div>
+    <div class="slide-num">SLIDE <span>18</span> / 18</div>
+</section>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll(".slide"));
+        this.currentSlide = 0;
+        this.navDotsContainer = document.querySelector(".nav-dots");
+        this.progressBar = document.querySelector(".progress-bar");
+
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupProgressBar();
+        this.setupNavDots();
+    }
+
+    setupIntersectionObserver() {
+        // Add .visible when slide is mostly in view → triggers reveal animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.intersectionRatio > 0.5) {
+                    entry.target.classList.add("visible");
+                    this.currentSlide = this.slides.indexOf(entry.target);
+                    this.updateNavDots();
+                }
+            });
+        }, { threshold: [0, 0.5, 1] });
+
+        this.slides.forEach(s => observer.observe(s));
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener("keydown", (e) => {
+            if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(e.key)) {
+                e.preventDefault();
+                this.go(this.currentSlide + 1);
+            } else if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) {
+                e.preventDefault();
+                this.go(this.currentSlide - 1);
+            } else if (e.key === "Home") {
+                this.go(0);
+            } else if (e.key === "End") {
+                this.go(this.slides.length - 1);
+            } else if (e.key === "f" || e.key === "F") {
+                if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+                else document.exitFullscreen();
+            }
+        });
+    }
+
+    setupTouchNav() {
+        let touchStartY = null;
+        document.addEventListener("touchstart", (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        document.addEventListener("touchend", (e) => {
+            if (touchStartY === null) return;
+            const dy = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(dy) > 50) {
+                if (dy < 0) this.go(this.currentSlide + 1);
+                else this.go(this.currentSlide - 1);
+            }
+            touchStartY = null;
+        }, { passive: true });
+    }
+
+    setupProgressBar() {
+        // update on scroll
+        const update = () => {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const pct = total > 0 ? (window.scrollY / total) * 100 : 0;
+            this.progressBar.style.width = pct + "%";
+        };
+        window.addEventListener("scroll", update, { passive: true });
+        update();
+    }
+
+    setupNavDots() {
+        // Always clear before building — re-rendering or capturing outerHTML
+        // shouldn't double up the dots.
+        this.navDotsContainer.innerHTML = "";
+        this.slides.forEach((_, i) => {
+            const b = document.createElement("button");
+            b.setAttribute("aria-label", `slide ${i + 1}`);
+            b.addEventListener("click", () => this.go(i));
+            this.navDotsContainer.appendChild(b);
+        });
+        this.updateNavDots();
+    }
+
+    updateNavDots() {
+        const dots = this.navDotsContainer.querySelectorAll("button");
+        dots.forEach((d, i) => d.classList.toggle("active", i === this.currentSlide));
+    }
+
+    go(idx) {
+        idx = Math.max(0, Math.min(this.slides.length - 1, idx));
+        this.slides[idx].scrollIntoView({ behavior: "smooth" });
+    }
+}
+
+new SlidePresentation();
+</script>
+</body>
+</html>
