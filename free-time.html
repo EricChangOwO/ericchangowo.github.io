@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eric — Availability</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:    #f4f1ea;
+      --paper-2:  #ebe7dd;
+      --ink:      #14110d;
+      --ink-2:    #2a2620;
+      --muted:    #76706a;
+      --line:     #14110d;
+      --rule:     #c9c3b6;
+      --accent:   #c2410c;
+      --highlight:#fde68a;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-feature-settings: "ss01", "cv11";
+      font-size: 16px;
+      line-height: 1.5;
+      padding: clamp(20px, 4vw, 56px) clamp(16px, 4vw, 48px);
+    }
+
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--ink-2);
+      font-feature-settings: "tnum";
+    }
+    .topline .right { color: var(--muted); text-transform: uppercase; letter-spacing: 0.14em; font-size: 11px; }
+    .topline .live { display: inline-flex; align-items: center; gap: 10px; }
+    .topline .live::before {
+      content: "";
+      width: 6px; height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+    .topline .clock {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+    }
+    .topline .tz {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 11px;
+    }
+
+    .preview {
+      margin-top: 10px;
+      padding: 10px 14px;
+      border: 1px dashed var(--accent);
+      color: var(--accent);
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .preview a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .hero {
+      padding: clamp(28px, 5vw, 48px) 0 clamp(20px, 3vw, 32px);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(20px, 3vw, 32px);
+      border-bottom: 1px solid var(--line);
+    }
+    @media (min-width: 860px) {
+      .hero { grid-template-columns: 1fr 1fr; align-items: end; }
+    }
+
+    .display {
+      font-family: "Fraunces", "Times New Roman", serif;
+      font-weight: 300;
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 0;
+      color: var(--ink);
+    }
+    .display em {
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .meta {
+      display: grid;
+      gap: 18px;
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.55;
+      max-width: 36ch;
+    }
+    .meta p { margin: 0; }
+    .meta dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 18px; }
+    .meta dt {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      align-self: center;
+    }
+    .meta dd {
+      margin: 0;
+      font-feature-settings: "tnum", "ss01";
+    }
+
+    .next {
+      margin: clamp(28px, 4vw, 44px) 0;
+      padding: clamp(20px, 3vw, 28px);
+      background: var(--ink);
+      color: var(--paper);
+      display: grid;
+      grid-template-columns: max-content 1fr max-content;
+      gap: clamp(16px, 3vw, 32px);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .next { grid-template-columns: 1fr; gap: 14px; }
+    }
+    .next .label {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--paper-2);
+      opacity: 0.7;
+    }
+    .next .label::before {
+      content: "→ ";
+      color: var(--accent);
+    }
+    .next .when {
+      font-family: "Fraunces", serif;
+      font-weight: 300;
+      font-size: clamp(18px, 2.4vw, 22px);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      font-feature-settings: "tnum";
+    }
+    .next .countdown {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: var(--paper-2);
+      text-align: right;
+    }
+    @media (max-width: 640px) {
+      .next .countdown { text-align: left; }
+    }
+    .next.idle { background: var(--paper-2); color: var(--ink); }
+    .next.idle .label { color: var(--muted); opacity: 1; }
+    .next.idle .countdown { color: var(--muted); }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: clamp(20px, 3vw, 28px) 0 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .section-head h2 {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      font-weight: 300;
+      font-size: clamp(18px, 2.4vw, 22px);
+      letter-spacing: -0.01em;
+    }
+    .section-head .key {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .schedule { margin: 0; padding: 0; }
+    .row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: clamp(16px, 3vw, 40px);
+      padding: 22px 0;
+      border-bottom: 1px solid var(--rule);
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .row { grid-template-columns: 1fr; gap: 12px; padding: 18px 0; }
+    }
+    .row .date {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-top: 4px;
+      font-feature-settings: "tnum";
+    }
+    .row .date strong {
+      display: block;
+      color: var(--ink);
+      font-weight: 500;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+    .row .slots { display: grid; gap: 6px; }
+    .slot {
+      display: grid;
+      grid-template-columns: 90px 1fr max-content;
+      gap: clamp(12px, 2vw, 24px);
+      align-items: baseline;
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 14px;
+      font-feature-settings: "tnum";
+      padding: 4px 0;
+    }
+    @media (max-width: 640px) {
+      .slot { grid-template-columns: 70px 1fr; }
+      .slot .tz { grid-column: 2; font-size: 11px; opacity: 0.7; }
+    }
+    .slot .tag {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .slot .range { color: var(--ink); }
+    .slot .tz { color: var(--muted); font-size: 12px; }
+    .slot.is-next .range {
+      background: var(--highlight);
+      box-shadow: 0 0 0 4px var(--highlight);
+      color: var(--ink);
+    }
+    .slot.is-next .tag { color: var(--accent); }
+    .slot.is-past { opacity: 0.35; }
+    .slot.is-past .range { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+    .slot.is-tbd .tag { color: var(--muted); }
+    .slot.is-tbd .range {
+      font-family: "Fraunces", serif;
+      font-style: italic;
+      font-size: 16px;
+      color: var(--ink-2);
+      letter-spacing: -0.01em;
+    }
+    .slot.is-tbd .tz { color: var(--muted); }
+
+    .notes {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(20px, 3vw, 40px);
+      padding: clamp(28px, 4vw, 48px) 0;
+      border-bottom: 1px solid var(--line);
+    }
+    @media (min-width: 720px) { .notes { grid-template-columns: 1fr 1fr; } }
+
+    .notes h3 {
+      margin: 0 0 14px;
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .notes ul { margin: 0; padding: 0; list-style: none; }
+    .notes li {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 14px;
+      font-feature-settings: "tnum";
+      padding: 6px 0;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .notes li:last-child { border-bottom: 1px solid var(--rule); }
+    .notes li span:last-child { color: var(--muted); font-size: 12px; }
+
+    .actions {
+      padding: clamp(28px, 4vw, 48px) 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    button {
+      appearance: none;
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: background 120ms ease, color 120ms ease;
+    }
+    button:hover { background: var(--ink); color: var(--paper); }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    .small {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .signoff {
+      margin-top: clamp(60px, 8vw, 96px);
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="topline">
+      <span class="live">
+        <span class="clock" id="now">--:--:--</span>
+        <span class="tz" id="tz-short">UTC</span>
+      </span>
+      <span class="right">Eric · Asia/Taipei → Local</span>
+    </header>
+    <div class="preview" id="preview" hidden>
+      <span>Preview mode · simulating <strong id="preview-tz"></strong></span>
+      <a href="?" id="preview-exit">exit preview →</a>
+    </div>
+
+    <section class="hero">
+      <h1 class="display">Eric's free <em>time</em>.</h1>
+      <div class="meta">
+        <p>Anchored to <strong>Taipei (UTC+8)</strong>, auto-rendered in your local timezone.</p>
+        <dl>
+          <dt>Viewer</dt><dd id="viewer-tz">—</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="next" id="next" aria-live="polite">
+      <span class="label" id="next-label">Next available</span>
+      <span class="when" id="next-when">Calculating…</span>
+      <span class="countdown" id="next-countdown">—</span>
+    </section>
+
+    <section>
+      <header class="section-head">
+        <h2>Seven-day schedule</h2>
+        <span class="key">All times shown in your timezone</span>
+      </header>
+      <div class="schedule" id="schedule"></div>
+    </section>
+
+    <section class="notes">
+      <div>
+        <h3>Best windows to book</h3>
+        <ul>
+          <li><span>Late night</span><span>00:00 — 02:00 TPE</span></li>
+          <li><span>Noon break</span><span>12:00 — 14:00 TPE</span></li>
+          <li><span>Evening</span><span>17:00 — 24:00 TPE</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Usually unavailable</h3>
+        <ul>
+          <li><span>Morning</span><span>02:00 — 12:00 TPE</span></li>
+          <li><span>Afternoon</span><span>14:00 — 17:00 TPE</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="actions">
+      <div>
+        <button id="copy" type="button">Copy availability</button>
+      </div>
+      <span class="small" id="copy-status">Share this page · times re-render for every reader.</span>
+    </section>
+
+    <footer class="signoff">
+      <span>Eric · Taipei</span>
+      <span>Single-page · no tracking</span>
+    </footer>
+  </main>
+
+  <script>
+    const TAIWAN_OFFSET = 8;
+
+    function resolveViewerTZ() {
+      const params = new URLSearchParams(location.search);
+      const override = params.get("tz");
+      const systemTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+      if (!override) return { tz: systemTZ, isPreview: false };
+      try {
+        new Intl.DateTimeFormat("en-US", { timeZone: override }).format(new Date());
+        return { tz: override, isPreview: true };
+      } catch {
+        console.warn(`Invalid timezone "${override}", falling back to system.`);
+        return { tz: systemTZ, isPreview: false };
+      }
+    }
+
+    const { tz: viewerTimeZone, isPreview } = resolveViewerTZ();
+
+    const availability = [
+      { tag: "LATE", start: 0,  end: 2  },
+      { tag: "NOON", start: 12, end: 14 },
+      { tag: "EVE",  start: 17, end: 24 },
+    ];
+
+    const $ = (sel) => document.querySelector(sel);
+    const scheduleEl = $("#schedule");
+
+    $("#viewer-tz").textContent = viewerTimeZone;
+
+    if (isPreview) {
+      const banner = $("#preview");
+      banner.hidden = false;
+      $("#preview-tz").textContent = viewerTimeZone;
+      $("#preview-exit").addEventListener("click", (e) => {
+        e.preventDefault();
+        const url = new URL(location.href);
+        url.search = "";
+        location.replace(url.toString());
+      });
+    }
+
+    function makeEl(tag, className, text) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text != null) el.textContent = text;
+      return el;
+    }
+
+    function getTaiwanTodayParts() {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Taipei",
+        year: "numeric", month: "2-digit", day: "2-digit",
+      }).formatToParts(new Date());
+      const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
+      return { year: +map.year, monthIndex: +map.month - 1, day: +map.day };
+    }
+
+    function tpeToDate(year, monthIndex, day, hour) {
+      return new Date(Date.UTC(year, monthIndex, day, hour - TAIWAN_OFFSET, 0, 0));
+    }
+
+    function isTaipeiWeekend(date) {
+      const wd = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Taipei", weekday: "short",
+      }).format(date);
+      return wd === "Sat" || wd === "Sun";
+    }
+
+    function fmtDateLocal(date) {
+      return new Intl.DateTimeFormat(undefined, {
+        timeZone: viewerTimeZone,
+        weekday: "short", month: "short", day: "numeric",
+      }).format(date);
+    }
+
+    function fmtTimeLocal(date) {
+      return new Intl.DateTimeFormat(undefined, {
+        timeZone: viewerTimeZone,
+        hour: "2-digit", minute: "2-digit", hour12: false,
+      }).format(date);
+    }
+
+    function fmtClockLocal(date) {
+      return new Intl.DateTimeFormat(undefined, {
+        timeZone: viewerTimeZone,
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
+      }).format(date);
+    }
+
+    function fmtTzShort(date) {
+      const parts = new Intl.DateTimeFormat(undefined, {
+        timeZone: viewerTimeZone,
+        timeZoneName: "short", hour: "2-digit",
+      }).formatToParts(date);
+      const tz = parts.find(p => p.type === "timeZoneName");
+      return tz ? tz.value : "";
+    }
+
+    function humanCountdown(target, now) {
+      const ms = target - now;
+      if (ms <= 0) return "in progress";
+      const m = Math.round(ms / 60000);
+      if (m < 60) return `in ${m} min`;
+      const h = Math.floor(m / 60);
+      const rm = m % 60;
+      if (h < 24) return rm ? `in ${h}h ${rm}m` : `in ${h}h`;
+      const d = Math.floor(h / 24);
+      const rh = h % 24;
+      return rh ? `in ${d}d ${rh}h` : `in ${d}d`;
+    }
+
+    function renderSchedule() {
+      const today = getTaiwanTodayParts();
+      const now = new Date();
+      const allSlots = [];
+
+      scheduleEl.replaceChildren();
+
+      for (let offset = 0; offset < 7; offset++) {
+        const noonAnchor = tpeToDate(today.year, today.monthIndex, today.day + offset, 12);
+        const taipeiLabelParts = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Taipei",
+          weekday: "short", month: "short", day: "numeric",
+        }).formatToParts(noonAnchor);
+        const tpeMap = Object.fromEntries(taipeiLabelParts.map(p => [p.type, p.value]));
+
+        const row = makeEl("article", "row");
+
+        const date = makeEl("div", "date");
+        date.appendChild(makeEl("strong", null, `${tpeMap.weekday} ${tpeMap.day}`));
+        date.appendChild(document.createTextNode(`${tpeMap.month}, Taipei`));
+        row.appendChild(date);
+
+        const slotsEl = makeEl("div", "slots");
+
+        if (isTaipeiWeekend(noonAnchor)) {
+          const item = makeEl("div", "slot is-tbd");
+          item.appendChild(makeEl("span", "tag", "OFF"));
+          item.appendChild(makeEl("span", "range", "Uncertain"));
+          item.appendChild(makeEl("span", "tz", "weekend · ping for ad-hoc"));
+          slotsEl.appendChild(item);
+        } else {
+          for (const slot of availability) {
+            const start = tpeToDate(today.year, today.monthIndex, today.day + offset, slot.start);
+            const end   = tpeToDate(today.year, today.monthIndex, today.day + offset, slot.end);
+
+            const item = makeEl("div", "slot");
+            item.appendChild(makeEl("span", "tag", slot.tag));
+            item.appendChild(makeEl("span", "range", `${fmtTimeLocal(start)} – ${fmtTimeLocal(end)}`));
+
+            const sameDay = fmtDateLocal(start) === fmtDateLocal(end) ||
+                            (end - start <= 24 * 3600 * 1000 &&
+                             fmtDateLocal(start) === fmtDateLocal(new Date(end.getTime() - 1)));
+            const localDay = sameDay
+              ? fmtDateLocal(start)
+              : `${fmtDateLocal(start)} – ${fmtDateLocal(end)}`;
+            item.appendChild(makeEl("span", "tz", localDay));
+
+            if (end <= now) item.classList.add("is-past");
+            allSlots.push({ start, end, el: item });
+
+            slotsEl.appendChild(item);
+          }
+        }
+
+        row.appendChild(slotsEl);
+        scheduleEl.appendChild(row);
+      }
+
+      const upcoming = allSlots
+        .filter(s => s.end > now)
+        .sort((a, b) => a.start - b.start)[0];
+
+      const nextSection = $("#next");
+      const nextLabel   = $("#next-label");
+      const nextWhen    = $("#next-when");
+      const nextCount   = $("#next-countdown");
+
+      if (upcoming) {
+        upcoming.el.classList.add("is-next");
+        const inProgress = upcoming.start <= now && upcoming.end > now;
+        nextLabel.textContent = inProgress ? "Available now" : "Next available";
+        nextWhen.textContent  = `${fmtDateLocal(upcoming.start)} · ${fmtTimeLocal(upcoming.start)} – ${fmtTimeLocal(upcoming.end)}`;
+        nextCount.textContent = inProgress
+          ? `ends ${humanCountdown(upcoming.end, now)}`
+          : `${humanCountdown(upcoming.start, now)} · ${viewerTimeZone}`;
+        nextSection.classList.toggle("idle", false);
+      } else {
+        nextLabel.textContent = "Schedule";
+        nextWhen.textContent  = "No windows in the next 7 days.";
+        nextCount.textContent = "—";
+        nextSection.classList.add("idle");
+      }
+    }
+
+    function renderClock() {
+      const now = new Date();
+      $("#now").textContent = fmtClockLocal(now);
+      $("#tz-short").textContent = `${viewerTimeZone} · ${fmtTzShort(now)}`;
+    }
+
+    async function copyAvailability() {
+      const text = [
+        "Eric's availability — Taipei (UTC+8) base, share-friendly:",
+        "",
+        "Available:",
+        "  · 00:00 – 02:00",
+        "  · 12:00 – 14:00",
+        "  · 17:00 – 24:00",
+        "",
+        "Usually unavailable:",
+        "  · 02:00 – 12:00",
+        "  · 14:00 – 17:00",
+        "",
+        "Open the page to see these in your own timezone.",
+      ].join("\n");
+
+      const status = $("#copy-status");
+      try {
+        await navigator.clipboard.writeText(text);
+        status.textContent = "Copied · paste it anywhere.";
+      } catch {
+        status.textContent = "Couldn't copy — select & copy manually.";
+      }
+    }
+
+    $("#copy").addEventListener("click", copyAvailability);
+
+    renderClock();
+    renderSchedule();
+    setInterval(renderClock, 1_000);
+    setInterval(renderSchedule, 60_000);
+  </script>
+</body>
+</html>
