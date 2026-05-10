@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+ehthumbs.db
+desktop.ini
